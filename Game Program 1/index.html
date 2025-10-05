@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Autobio Art — Start</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+     
+
+    .box {
+      max-width: 600px;
+      margin: auto;
+      border: 1px solid #ccc;
+      padding: 16px
+    }
+
+    .row a {
+      display: inline-block;
+      margin: 6px 8px;
+      padding: 8px 10px;
+      border: 1px solid #333;
+      text-decoration: none;
+      color: #000
+    }
+
+    #pop {
+      display: none;
+      border: 1px solid #999;
+      padding: 12px;
+      margin-top: 12px;
+      background: #f7f7f7
+    }
+
+    button {
+      padding: 6px 10px
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="box">
+    <h1>My Unusual Day!</h1>
+    <p>Exam, deadline, stress from past....I need a reset. When I feel anxiety and stress I sketch to let my thoughts out through pen
+      or pencil. I sometimes end up getting an art and sometimes I get a toddlers drawing.So...  </p>
+    <button id="open">Take a deep breath</button>
+
+    <div id="pop">
+      <p><strong>Why not do some art!</strong></p>
+      <div class="row">
+        <a href="paint.html" target="_blank">🎨 Painting </a>
+        <a href="sketch.html" target="_blank">✏️ Sketch</a>
+        <a href="scribble.html" target="_blank">🖊️ Scribble </a>
+      </div>
+      <button id="close">Maybe later</button>
+    </div>
+  </div>
+
+  <script>
+    const pop = document.getElementById('pop');
+    document.getElementById('open').onclick = () => pop.style.display = 'block';
+    document.getElementById('close').onclick = () => pop.style.display = 'none';
+  </script>
+</body>
+
+</html>

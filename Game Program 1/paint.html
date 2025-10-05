@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Painting</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 10px
+        }
+
+        #top {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+
+        #panel {
+            border: 1px solid #333;
+            padding: 8px 10px;
+            max-width: 520px
+        }
+
+        #tools {
+            margin: 8px 0
+        }
+
+        .c {
+            width: 95vw;
+            height: 60vh;
+            border: 1px dashed #999;
+            display: block
+        }
+
+        .sw {
+            width: 22px;
+            height: 22px;
+            border: 1px solid #333;
+            display: inline-block;
+            cursor: pointer
+        }
+
+        button {
+            margin-right: 6px
+        }
+
+        .meta {
+            font-size: 12px;
+            color: #444
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Painting — 5-minute play</h2>
+
+    <div id="top">
+        <div id="panel">
+            <div class="meta">Time left: <span id="timer">05:00</span> | Step <span id="step">1</span>/5</div>
+            <p id="instruction"><strong>Draw a simple sun and a big sky.</strong></p>
+            <div class="meta">New prompt every minute. </div>
+        </div>
+    </div>
+
+    <div id="tools">
+        <span class="sw" data="#e63946" style="background:#e63946"></span>
+        <span class="sw" data="#f1fa8c" style="background:#f1fa8c"></span>
+        <span class="sw" data="#06d6a0" style="background:#06d6a0"></span>
+        <span class="sw" data="#99dae9" style="background: #99dae9"></span>
+        <span class="sw" data="#8338ec" style="background:#8338ec"></span>
+        <span class="sw" data="#ff9f1c" style="background:#ff9f1c"></span>
+        <span class="sw" data="#000000" style="background: #000000"></span>
+        Size <input id="size" type="range" min="2" max="30" value="10">
+        <button id="clear">Clear</button>
+        <button id="save">Save PNG</button>
+    </div>
+
+    <canvas id="pad" class="c"></canvas>
+
+    <script>
+      
+        const prompts = [
+            "Draw a simple sun and a big sky.",
+            "Add a child-like house: square + triangle roof.",
+            "Add 2–3 trees using dots and lines.",
+            "Paint a path and a tiny pet (any shape!).",
+            "Add small details: clouds, flowers, birds."
+        ];
+        let seconds = 300; // 5 min
+        let minuteIndex = 0; // 0..4
+        const instruction = document.getElementById('instruction');
+        const stepEl = document.getElementById('step');
+        const timerEl = document.getElementById('timer');
+
+        function setPrompt(i) {
+            instruction.textContent = prompts[i];
+            stepEl.textContent = (i + 1);
+        }
+        function tick() {
+            seconds--;
+            const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+            const s = String(seconds % 60).padStart(2, '0');
+            timerEl.textContent = m + ":" + s;
+
+           
+            const newIndex = 4 - Math.floor((seconds) / 60);
+            if (newIndex !== minuteIndex && newIndex >= 0 && newIndex < 5) {
+                minuteIndex = newIndex;
+                setPrompt(minuteIndex);
+            }
+
+            if (seconds <= 0) {
+                location.href = "done.html";
+                clearInterval(int);
+            }
+        }
+        setPrompt(0);
+        const int = setInterval(tick, 1000);
+
+       
+        const c = document.getElementById('pad'), x = c.getContext('2d');
+        function fit() { c.width = c.clientWidth; c.height = c.clientHeight; } fit();
+        let draw = false, last = [0, 0], col = '#118ab2', sz = 10;
+        document.querySelectorAll('.sw').forEach(s => s.onclick = () => col = s.getAttribute('data'));
+        size.oninput = e => sz = +e.target.value;
+        clear.onclick = () => x.clearRect(0, 0, c.width, c.height);
+        save.onclick = () => { let a = document.createElement('a'); a.download = 'painting.png'; a.href = c.toDataURL(); a.click(); };
+        const p = e => { const r = c.getBoundingClientRect(); const t = e.touches ? e.touches[0] : e; return [t.clientX - r.left, t.clientY - r.top]; };
+        const start = e => { draw = true; last = p(e); e.preventDefault(); };
+        const move = e => {
+            if (!draw) return;
+            const [X, Y] = p(e);
+            x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = col; x.lineWidth = sz;
+            x.beginPath(); x.moveTo(last[0], last[1]); x.lineTo(X, Y); x.stroke();
+            last = [X, Y]; e.preventDefault();
+        };
+        const end = () => draw = false;
+        c.addEventListener('mousedown', start); c.addEventListener('mousemove', move); addEventListener('mouseup', end);
+        c.addEventListener('touchstart', start, { passive: false }); c.addEventListener('touchmove', move, { passive: false }); addEventListener('touchend', end);
+        addEventListener('resize', fit);
+    </script>
+</body>
+
+</html>
